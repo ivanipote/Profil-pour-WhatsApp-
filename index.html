@@ -1,567 +1,485 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Personnalise ton média WhatsApp</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Google Fonts pour un style moderne -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    /* Arrière-plan flou vert */
-    body {
-      margin: 0;
-      font-family: 'Roboto', Arial, sans-serif;
-      min-height: 100vh;
-      background: url('https://images.unsplash.com/photo-1465101162946-4377e57745c3?auto=format&fit=crop&w=900&q=80') center/cover no-repeat #25D366;
-      position: relative;
-      overflow-x: hidden;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      z-index: -2;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(120deg,#25d366aa,#128c7e99);
-      backdrop-filter: blur(16px);
-      opacity: 0.8;
-      pointer-events: none;
-    }
-
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-      padding-bottom: 120px;
-      padding-top: 32px;
-    }
-
-    h1 {
-      text-align: center;
-      color: #fff;
-      font-size: 2.2em;
-      margin-bottom: 8px;
-      text-shadow: 0 2px 10px #128c7e88;
-      user-select: none;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: #e0f7fa;
-      font-size: 1.1em;
-      margin-bottom: 24px;
-      user-select: none;
-    }
-
-    .actions {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      margin-top: 40px;
-      margin-bottom: 40px;
-    }
-
-    .action-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 28px;
-      font-size: 1.05em;
-      border-radius: 30px;
-      border: none;
-      background: rgba(255,255,255,0.15);
-      color: #fff;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 2px 16px #128c7e44;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.15s, box-shadow 0.15s;
-    }
-    .action-btn:hover {
-      background: rgba(37,211,102,0.5);
-      box-shadow: 0 4px 24px #128c7e66;
-    }
-    .action-btn svg {
-      font-size: 1.2em;
-    }
-
-    /* Barre de navigation en bas */
-    .bottom-nav {
-      position: fixed;
-      z-index: 100;
-      left: 0; right: 0; bottom: 0;
-      height: 64px;
-      background: rgba(37,211,102,0.25);
-      backdrop-filter: blur(12px);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      border-top: 1.5px solid #128c7e33;
-      box-shadow: 0 -2px 20px #128c7e66;
-    }
-    .nav-link {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 1em;
-      padding: 9px 16px;
-      border-radius: 22px;
-      transition: background 0.18s;
-    }
-    .nav-link.active, .nav-link:hover {
-      background: #25d366;
-      color: #222;
-    }
-    /* Barre flottante de fonctions en bas, style WhatsApp */
-    .bottom-actions {
-      position: fixed;
-      z-index: 101;
-      left: 0; right: 0; bottom: 64px;
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      padding: 16px 0;
-      background: transparent;
-      pointer-events: none;
-    }
-    .floating-btn {
-      pointer-events: auto;
-      background: rgba(255,255,255,0.2);
-      border: none;
-      border-radius: 50%;
-      width: 60px; height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 20px #25d36644;
-      backdrop-filter: blur(10px);
-      cursor: pointer;
-      font-size: 1.7em;
-      color: #25d366;
-      transition: background 0.2s, box-shadow 0.2s;
-    }
-    .floating-btn:hover {
-      background: #25d366;
-      color: #fff;
-      box-shadow: 0 4px 24px #128c7e77;
-    }
-
-    /* Modal / Paramètres */
-    .modal-bg {
-      position: fixed;
-      z-index: 999;
-      top:0; left:0; right:0; bottom:0;
-      background: rgba(37,211,102,0.25);
-      backdrop-filter: blur(16px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-bg.active {
-      display: flex;
-    }
-    .modal {
-      background: rgba(255,255,255,0.90);
-      border-radius: 24px;
-      box-shadow: 0 4px 48px #128c7e22;
-      padding: 32px 22px;
-      min-width: 330px;
-      max-width: 95vw;
-      position: relative;
-      color: #222;
-      font-size: 1.08em;
-      animation: fadein 0.2s;
-    }
-    @keyframes fadein { from { opacity:0; transform: scale(0.9);} to {opacity:1; transform: scale(1);} }
-    .modal h2 { margin-top: 0; color: #128c7e;}
-    .close-modal {
-      position: absolute;
-      top: 10px; right: 14px;
-      font-size: 1.5em;
-      color: #128c7e;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-    /* Input styles */
-    input[type="file"], input[type="text"], select {
-      font-size: 1em;
-      margin: 5px 0 15px 0;
-      padding: 9px;
-      border-radius: 7px;
-      border: 1px solid #128c7e33;
-      width: 100%;
-      background: #f7fff7;
-      box-sizing: border-box;
-    }
-    .output-img {
-      display: block;
-      margin: 18px auto;
-      max-width: 220px;
-      border-radius: 50%;
-      box-shadow: 0 2px 16px #128c7e44;
-    }
-    .download-btn {
-      background: #25d366;
-      color: #fff;
-      border: none;
-      border-radius: 18px;
-      padding: 8px 22px;
-      font-weight: bold;
-      font-size: 1em;
-      box-shadow: 0 2px 14px #128c7e44;
-      cursor: pointer;
-      margin-top: 12px;
-      transition: background 0.18s;
-    }
-    .download-btn:hover { background: #128c7e;}
-    /* Ajout d'un effet de survol pour les thèmes */
-    .theme-btn {
-      margin: 7px 0;
-      background: #e0f7fa;
-      color: #128c7e;
-      padding: 8px 18px;
-      border-radius: 12px;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .theme-btn:hover { background: #25d366; color:#fff;}
-    /* Suggestions supplémentaires */
-    .suggestion {
-      color: #128c7e;
-      background: #e0f7fa;
-      padding: 8px 16px;
-      border-radius: 10px;
-      margin: 13px 0;
-      text-align: center;
-      font-size: 0.98em;
-    }
-    /* Responsive */
-    @media (max-width: 600px) {
-      .container { padding-top: 10px; }
-      h1 { font-size: 1.5em; }
-      .modal { padding: 15px 6px; min-width: unset;}
-      .bottom-actions { gap: 10px; }
-      .floating-btn { width: 42px; height: 42px; font-size: 1.1em;}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créateur de Statut WhatsApp</title>
+    <style>
+        :root {
+            --whatsapp-green: #128C7E;
+            --whatsapp-light-green: #25D366;
+            --whatsapp-dark-green: #075E54;
+            --whatsapp-light: #e2f4ea;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f0f0;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--whatsapp-green), var(--whatsapp-dark-green));
+            color: white;
+            text-align: center;
+            padding: 1.8rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+        
+        .editor-panel, .preview-panel {
+            flex: 1;
+            min-width: 320px;
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        h2 {
+            color: var(--whatsapp-dark-green);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--whatsapp-light);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        textarea, input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus, input:focus, select:focus {
+            border-color: var(--whatsapp-green);
+            outline: none;
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .color-picker {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .color-picker input {
+            flex: 1;
+            padding: 3px;
+            height: 45px;
+        }
+        
+        .emoji-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .emoji {
+            font-size: 26px;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            background: var(--whatsapp-light);
+        }
+        
+        .emoji:hover {
+            background-color: var(--whatsapp-light-green);
+            transform: scale(1.1);
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--whatsapp-green), var(--whatsapp-dark-green));
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-block;
+            margin-top: 15px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .preview-container {
+            background: linear-gradient(45deg, #c2e9fb, #a1c4fd);
+            border-radius: 12px;
+            min-height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .status-preview {
+            width: 260px;
+            height: 480px;
+            background-color: white;
+            border-radius: 18px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .status-header {
+            background: linear-gradient(to right, var(--whatsapp-green), var(--whatsapp-dark-green));
+            color: white;
+            padding: 18px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .status-content {
+            flex: 1;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .status-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+        }
+        
+        .status-text {
+            max-width: 100%;
+            word-break: break-word;
+            z-index: 2;
+            position: relative;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .download-btn {
+            background: linear-gradient(to right, var(--whatsapp-light-green), #1da851);
+            margin-top: 25px;
+            width: 100%;
+            padding: 16px;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 8px;
+        }
+        
+        .slider-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--whatsapp-dark-green);
+        }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #ddd;
+            outline: none;
+            flex: 1;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--whatsapp-green);
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 50px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Personnalise ton WhatsApp !</h1>
-    <div class="subtitle">
-      Crée une photo de profil ou un statut WhatsApp unique selon tes envies.
+    <header>
+        <h1>Créateur de Statut WhatsApp</h1>
+        <p class="tagline">Créez et personnalisez votre statut avec floutage d'arrière-plan</p>
+    </header>
+    
+    <div class="container">
+        <div class="editor-panel">
+            <h2>Personnaliser votre statut</h2>
+            
+            <div class="form-group">
+                <label for="status-text">Votre message de statut</label>
+                <textarea id="status-text" placeholder="Tapez votre message ici...">Mon super statut WhatsApp !</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="font-family">Police de caractères</label>
+                <select id="font-family">
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="'Helvetica Neue', Helvetica, sans-serif">Helvetica</option>
+                    <option value="'Times New Roman', serif">Times New Roman</option>
+                    <option value="Georgia, serif">Georgia</option>
+                    <option value="'Courier New', monospace">Courier New</option>
+                    <option value="Verdana, sans-serif">Verdana</option>
+                    <option value="'Comic Sans MS', cursive">Comic Sans</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="font-size">Taille de police</label>
+                <div class="slider-container">
+                    <input type="range" id="font-size" min="16" max="48" value="24">
+                    <span class="slider-value" id="font-size-value">24px</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="text-color">Couleur du texte</label>
+                <div class="color-picker">
+                    <input type="color" id="text-color" value="#000000">
+                    <input type="text" id="text-color-hex" value="#000000" placeholder="#000000">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Ajouter des emojis</label>
+                <div class="emoji-picker">
+                    <span class="emoji" onclick="addEmoji('😊')">😊</span>
+                    <span class="emoji" onclick="addEmoji('😂')">😂</span>
+                    <span class="emoji" onclick="addEmoji('❤️')">❤️</span>
+                    <span class="emoji" onclick="addEmoji('😍')">😍</span>
+                    <span class="emoji" onclick="addEmoji('👍')">👍</span>
+                    <span class="emoji" onclick="addEmoji('🎉')">🎉</span>
+                    <span class="emoji" onclick="addEmoji('🙏')">🙏</span>
+                    <span class="emoji" onclick="addEmoji('😎')">😎</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="bg-image">Image d'arrière-plan</label>
+                <input type="file" id="bg-image" accept="image/*">
+            </div>
+            
+            <div class="form-group">
+                <label for="blur-intensity">Intensité du flou d'arrière-plan</label>
+                <div class="slider-container">
+                    <input type="range" id="blur-intensity" min="0" max="20" value="5">
+                    <span class="slider-value" id="blur-value">5px</span>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="resetCustomization()">Réinitialiser</button>
+        </div>
+        
+        <div class="preview-panel">
+            <h2>Aperçu de votre statut</h2>
+            
+            <div class="preview-container">
+                <div class="status-preview">
+                    <div class="status-header">Statut WhatsApp</div>
+                    <div class="status-content">
+                        <div class="status-background" id="status-background"></div>
+                        <div class="status-text" id="preview-text">Votre texte apparaîtra ici</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn download-btn" onclick="downloadStatus()">Télécharger le statut</button>
+        </div>
     </div>
-    <div class="actions">
-      <button class="action-btn" onclick="openModal('profile')">
-        <svg viewBox="0 0 24 24" width="1em" height="1em"><circle cx="12" cy="8" r="4" fill="#25d366"/><rect x="6" y="14" width="12" height="6" rx="3" fill="#128c7e"/></svg>
-        Créer photo de profil
-      </button>
-      <button class="action-btn" onclick="openModal('status')">
-        <svg viewBox="0 0 24 24" width="1em" height="1em"><rect x="3" y="7" width="18" height="10" rx="5" fill="#128c7e"/><circle cx="19" cy="12" r="2.5" fill="#25d366"/></svg>
-        Créer un statut (photo/vidéo)
-      </button>
-      <button class="action-btn" onclick="openModal('settings')">
-        <svg viewBox="0 0 24 24" width="1em" height="1em"><circle cx="12" cy="12" r="3.5" fill="#25d366"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M15.7 15.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M15.7 8.3l2.1-2.1" stroke="#128c7e" stroke-width="2" stroke-linecap="round"/></svg>
-        Paramètres
-      </button>
-    </div>
-    <div class="suggestion">
-      💡 Astuce : Ajoute du texte fun à ta photo ou applique un thème super cool sur ton profil !
-    </div>
-  </div>
+    
+    <footer>
+        <p>© 2023 Créateur de Statut WhatsApp. Cet outil n'est pas affilié à WhatsApp Inc.</p>
+    </footer>
 
-  <!-- Barre de navigation en bas -->
-  <nav class="bottom-nav">
-    <a href="contact.html" class="nav-link">Contact</a>
-    <a href="privacy.html" class="nav-link">Confidentialité</a>
-    <a href="about.html" class="nav-link">À propos</a>
-  </nav>
-  <!-- Boutons flottants d'action style WhatsApp -->
-  <div class="bottom-actions">
-    <button class="floating-btn" title="Profil" onclick="openModal('profile')">
-      <svg viewBox="0 0 24 24" width="1.4em" height="1.4em"><circle cx="12" cy="8" r="4" fill="currentColor"/><rect x="6" y="14" width="12" height="6" rx="3" fill="currentColor"/></svg>
-    </button>
-    <button class="floating-btn" title="Statut" onclick="openModal('status')">
-      <svg viewBox="0 0 24 24" width="1.4em" height="1.4em"><rect x="3" y="7" width="18" height="10" rx="5" fill="currentColor"/><circle cx="19" cy="12" r="2.5" fill="#fff"/></svg>
-    </button>
-    <button class="floating-btn" title="Paramètres" onclick="openModal('settings')">
-      <svg viewBox="0 0 24 24" width="1.4em" height="1.4em"><circle cx="12" cy="12" r="3.5" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M15.7 15.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M15.7 8.3l2.1-2.1" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-    </button>
-  </div>
-
-  <!-- Modals -->
-  <div class="modal-bg" id="modal-profile">
-    <div class="modal">
-      <button class="close-modal" onclick="closeModal('profile')">&times;</button>
-      <h2>Créer une photo de profil</h2>
-      <form id="profile-form">
-        <label>Image (carré recommandé pour WhatsApp):</label>
-        <input type="file" accept="image/*" id="profile-img" required>
-        <label>Texte à ajouter :</label>
-        <input type="text" id="profile-text" placeholder="Ex: Mon WhatsApp 😎">
-        <label>Style de bordure :</label>
-        <select id="profile-border">
-          <option value="circle">Ronde</option>
-          <option value="square">Carré</option>
-          <option value="border">Bordure colorée</option>
-        </select>
-        <label>Effet arrière-plan :</label>
-        <select id="profile-bg">
-          <option value="blur">Flou</option>
-          <option value="gradient">Dégradé</option>
-          <option value="none">Aucun</option>
-        </select>
-        <button type="submit" class="download-btn">Générer et télécharger</button>
-      </form>
-      <img src="" id="profile-output" class="output-img" style="display:none;">
-    </div>
-  </div>
-  <div class="modal-bg" id="modal-status">
-    <div class="modal">
-      <button class="close-modal" onclick="closeModal('status')">&times;</button>
-      <h2>Créer un statut WhatsApp</h2>
-      <form id="status-form">
-        <label>Fichier (photo ou vidéo):</label>
-        <input type="file" accept="image/*,video/*" id="status-file" required>
-        <label>Texte à ajouter (optionnel) :</label>
-        <input type="text" id="status-text" placeholder="Ex: Hello 👋">
-        <button type="submit" class="download-btn">Générer et télécharger</button>
-      </form>
-      <div id="status-output"></div>
-    </div>
-  </div>
-  <div class="modal-bg" id="modal-settings">
-    <div class="modal">
-      <button class="close-modal" onclick="closeModal('settings')">&times;</button>
-      <h2>Paramètres</h2>
-      <div>
-        <label>Bibliothèque (fichiers enregistrés) :</label>
-        <div id="library-list">Aucun fichier enregistré.</div>
-        <hr>
-        <label>Thème du site :</label>
-        <button class="theme-btn" onclick="setTheme('vert')">Vert WhatsApp</button>
-        <button class="theme-btn" onclick="setTheme('dark')">Sombre</button>
-        <button class="theme-btn" onclick="setTheme('clair')">Clair</button>
-        <hr>
-        <label>Options avancées :</label>
-        <ul>
-          <li>Changer la langue</li>
-          <li>Activer effet de fond animé</li>
-          <li>Personnaliser les boutons</li>
-          <li>Afficher l’aide</li>
-        </ul>
-        <button class="download-btn" onclick="exportLibrary()">Télécharger la bibliothèque</button>
-      </div>
-    </div>
-  </div>
-  <!-- JS -->
-  <script>
-    // Navigation/Modals
-    function openModal(type) {
-      document.getElementById('modal-' + type).classList.add('active');
-    }
-    function closeModal(type) {
-      document.getElementById('modal-' + type).classList.remove('active');
-    }
-
-    // Création photo de profil
-    const profileForm = document.getElementById('profile-form');
-    profileForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const imgFile = document.getElementById('profile-img').files[0];
-      const text = document.getElementById('profile-text').value;
-      const border = document.getElementById('profile-border').value;
-      const bg = document.getElementById('profile-bg').value;
-      if (!imgFile) return alert('Choisis une image !');
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        generateProfile(ev.target.result, text, border, bg);
-      };
-      reader.readAsDataURL(imgFile);
-    });
-
-    function generateProfile(imgSrc, text, border, bg) {
-      // WhatsApp profile: 640x640px
-      const size = 640;
-      const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d');
-
-      // Option: flou ou gradient autour
-      if (bg === 'blur') {
-        ctx.save();
-        ctx.filter = 'blur(16px)';
-        ctx.drawImage(canvas, 0, 0, size, size);
-        ctx.restore();
-      } else if (bg === 'gradient') {
-        const grd = ctx.createRadialGradient(size/2, size/2, size/2.5, size/2, size/2, size/1.2);
-        grd.addColorStop(0, "#25d366");
-        grd.addColorStop(1, "#128c7e");
-        ctx.fillStyle = grd;
-        ctx.fillRect(0,0,size,size);
-      } else {
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(0,0,size,size);
-      }
-      // Dessiner l'image principale (centrée)
-      const img = new window.Image();
-      img.onload = function() {
-        // Recadrage carré
-        let sx = 0, sy = 0, sw = img.width, sh = img.height;
-        if (img.width > img.height) { sx = (img.width-img.height)/2; sw = sh = img.height; }
-        else if (img.height > img.width) { sy = (img.height-img.width)/2; sw = sh = img.width; }
-
-        ctx.save();
-        if (border === 'circle') {
-          ctx.beginPath();
-          ctx.arc(size/2,size/2,size/2-18,0,2*Math.PI);
-          ctx.closePath();
-          ctx.clip();
+    <!-- Bibliothèque html2canvas pour le téléchargement -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <script>
+        // Éléments DOM
+        const statusText = document.getElementById('status-text');
+        const fontFamily = document.getElementById('font-family');
+        const fontSize = document.getElementById('font-size');
+        const fontSizeValue = document.getElementById('font-size-value');
+        const textColor = document.getElementById('text-color');
+        const textColorHex = document.getElementById('text-color-hex');
+        const bgImage = document.getElementById('bg-image');
+        const blurIntensity = document.getElementById('blur-intensity');
+        const blurValue = document.getElementById('blur-value');
+        const previewText = document.getElementById('preview-text');
+        const statusBackground = document.getElementById('status-background');
+        
+        // Initialisation
+        updatePreview();
+        
+        // Événements
+        statusText.addEventListener('input', updatePreview);
+        fontFamily.addEventListener('change', updatePreview);
+        fontSize.addEventListener('input', function() {
+            fontSizeValue.textContent = `${this.value}px`;
+            updatePreview();
+        });
+        
+        textColor.addEventListener('input', function() {
+            textColorHex.value = this.value;
+            updatePreview();
+        });
+        
+        textColorHex.addEventListener('input', function() {
+            textColor.value = this.value;
+            updatePreview();
+        });
+        
+        bgImage.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    statusBackground.style.backgroundImage = `url(${event.target.result})`;
+                    updateBlur();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        blurIntensity.addEventListener('input', function() {
+            blurValue.textContent = `${this.value}px`;
+            updateBlur();
+        });
+        
+        // Fonctions
+        function updatePreview() {
+            previewText.textContent = statusText.value || 'Votre texte apparaîtra ici';
+            previewText.style.fontFamily = fontFamily.value;
+            previewText.style.fontSize = `${fontSize.value}px`;
+            previewText.style.color = textColor.value;
         }
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, size, size);
-        ctx.restore();
-        // Bordure colorée si demandé
-        if (border === 'border') {
-          ctx.save();
-          ctx.lineWidth = 26;
-          ctx.strokeStyle = '#25d366';
-          ctx.beginPath();
-          ctx.arc(size/2,size/2,size/2-13,0,2*Math.PI);
-          ctx.closePath();
-          ctx.stroke();
-          ctx.restore();
+        
+        function updateBlur() {
+            statusBackground.style.filter = `blur(${blurIntensity.value}px)`;
         }
-        // Ajouter texte
-        if (text && text.trim() !== "") {
-          ctx.save();
-          ctx.font = "bold 48px 'Roboto', Arial";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "bottom";
-          ctx.fillStyle = "#128c7e";
-          ctx.shadowColor = "#fff";
-          ctx.shadowBlur = 8;
-          ctx.fillText(text, size/2, size-40);
-          ctx.restore();
+        
+        function addEmoji(emoji) {
+            statusText.value += emoji;
+            updatePreview();
         }
-        // Afficher l'image générée
-        const url = canvas.toDataURL("image/png");
-        document.getElementById('profile-output').src = url;
-        document.getElementById('profile-output').style.display = "block";
-        saveToLibrary(url, 'photo de profil');
-        // Télécharger image
-        downloadData(url, 'whatsapp_profile.png');
-      };
-      img.src = imgSrc;
-    }
-
-    // Création de statut (photo ou vidéo)
-    const statusForm = document.getElementById('status-form');
-    statusForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const fileInput = document.getElementById('status-file');
-      const file = fileInput.files[0];
-      const text = document.getElementById('status-text').value;
-      if (!file) return alert('Choisis un fichier !');
-      if (file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          generateStatusImage(ev.target.result, text);
-        };
-        reader.readAsDataURL(file);
-      } else if (file.type.startsWith("video/")) {
-        generateStatusVideo(file, text);
-      } else {
-        alert('Format non supporté.');
-      }
-    });
-
-    function generateStatusImage(imgSrc, text) {
-      // WhatsApp status: 480x480px
-      const size = 480;
-      const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d');
-
-      const img = new window.Image();
-      img.onload = function() {
-        // Recadrage carré
-        let sx = 0, sy = 0, sw = img.width, sh = img.height;
-        if (img.width > img.height) { sx = (img.width-img.height)/2; sw = sh = img.height; }
-        else if (img.height > img.width) { sy = (img.height-img.width)/2; sw = sh = img.width; }
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, size, size);
-        // Ajouter texte
-        if (text && text.trim() !== "") {
-          ctx.save();
-          ctx.font = "bold 32px 'Roboto', Arial";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "bottom";
-          ctx.fillStyle = "#25d366";
-          ctx.shadowColor = "#fff";
-          ctx.shadowBlur = 7;
-          ctx.fillText(text, size/2, size-25);
-          ctx.restore();
+        
+        function resetCustomization() {
+            statusText.value = '';
+            fontFamily.value = 'Arial, sans-serif';
+            fontSize.value = 24;
+            fontSizeValue.textContent = '24px';
+            textColor.value = '#000000';
+            textColorHex.value = '#000000';
+            bgImage.value = '';
+            blurIntensity.value = 5;
+            blurValue.textContent = '5px';
+            
+            statusBackground.style.backgroundImage = 'none';
+            statusBackground.style.filter = 'blur(5px)';
+            
+            updatePreview();
         }
-        // Afficher l'image générée
-        const url = canvas.toDataURL("image/png");
-        document.getElementById('status-output').innerHTML =
-          `<img src="${url}" class="output-img"><br><button class="download-btn" onclick="downloadData('${url}','whatsapp_status.png')">Télécharger</button>`;
-        saveToLibrary(url, 'statut photo');
-      };
-      img.src = imgSrc;
-    }
-
-    function generateStatusVideo(file, text) {
-      // On affiche juste la vidéo et propose d'ajouter un texte en overlay (non modifiable)
-      const url = URL.createObjectURL(file);
-      let html = `<video src="${url}" controls width="220" style="border-radius:18px;box-shadow:0 2px 16px #128c7e44"></video>`;
-      if (text && text.trim() !== "") {
-        html += `<div style="font-weight:bold;color:#25d366;background:#fff;padding:7px 18px;border-radius:14px;margin-top:-30px;position:relative;top:-30px">${text}</div>`;
-      }
-      html += `<br><a href="${url}" download="whatsapp_status_video.mp4" class="download-btn">Télécharger</a>`;
-      document.getElementById('status-output').innerHTML = html;
-      saveToLibrary(url, 'statut vidéo');
-    }
-
-    // Thèmes
-    function setTheme(theme) {
-      if (theme === 'dark') {
-        document.body.style.background = "#222";
-        document.body.style.color = "#eee";
-        document.body.style.setProperty('--accent', '#222');
-      } else if (theme === 'clair') {
-        document.body.style.background = "#f7fff7";
-        document.body.style.color = "#222";
-        document.body.style.setProperty('--accent', '#f7fff7');
-      } else {
-        document.body.style.background = "";
-        document.body.style.color = "";
-        document.body.style.setProperty('--accent', '');
-      }
-    }
-
-    // Librairie interne
-    let library = [];
-    function saveToLibrary(url, type) {
-      library.push({url, type, date: new Date().toLocaleString()});
-      updateLibrary();
-    }
-    function updateLibrary() {
-      const list = document.getElementById('library-list');
-      if (library.length === 0) list.innerHTML = "Aucun fichier enregistré.";
-      else list.innerHTML = library.map((f,i) => `<div>
-        <b>${f.type}</b> <small>(${f.date})</small><br>
-        <a href="${f.url}" download="media_${i}.png">Télécharger</a>
-      </div>`).join("<hr>");
-    }
-    function exportLibrary() {
-      if (library.length === 0) return alert('Aucun fichier dans la bibliothèque.');
-      let zip = '';
-      library.forEach((f,i) => {
-        zip += `${f.type} - ${f.date}\n${f.url}\n\n`;
-      });
-      const blob = new Blob([zip], {type:'text/plain'});
-      const a = 
+        
+        function downloadStatus() {
+            // Utilisation de html2canvas pour capturer le statut
+            html2canvas(document.querySelector(".status-preview")).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'whatsapp-status.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+        
+        // Initialiser avec une image de fond par défaut
+        function initDefaultBackground() {
+            statusBackground.style.backgroundImage = "url('https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')";
+            statusBackground.style.filter = `blur(${blurIntensity.value}px)`;
+        }
+        
+        // Initialiser avec une image par défaut
+        window.onload = initDefaultBackground;
+    </script>
+</body>
+  </html>
